@@ -1,4 +1,4 @@
-name: Frontend CI - Build & Push (Single ECR Repo)
+name: Frontend CI - Build & Push (ECR)
 
 on:
   push:
@@ -15,18 +15,18 @@ jobs:
     env:
       AWS_REGION: ${{ secrets.AWS_REGION }}
       ECR_REGISTRY: ${{ secrets.REGISTRY_URL }}
-      ECR_REPOSITORY: mission-control              # <-- single repo name
+      ECR_REPOSITORY: mission-control-frontend
       IMAGE_VERSION: v1.0.${{ github.run_number }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Configure AWS credentials
+      - name: Configure AWS credentials (from GitHub Secrets)
         uses: aws-actions/configure-aws-credentials@v5
         with:
-          aws-access-key-id: ${{ secrets.DOCKERHUB_USERNAME }}
-          aws-secret-access-key: ${{ secrets.DOCKERHUB_TOKEN }}
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
 
       - name: Login to Amazon ECR
@@ -42,5 +42,5 @@ jobs:
           file: ./frontend/Dockerfile
           push: true
           tags: |
-            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-${{ env.IMAGE_VERSION }}
-            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:frontend-latest
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_VERSION }}
+            ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
