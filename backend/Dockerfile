@@ -2,7 +2,7 @@ FROM golang:1.21-alpine AS builder
 WORKDIR /app
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -o server main.go
-# amog
+# amogus
 FROM alpine:latest
 WORKDIR /root/
 COPY --from=builder /app/server .
